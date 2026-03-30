@@ -34,8 +34,8 @@ Ela permite armazenar e organizar informações sobre filmes, funcionando como u
 
 <div align="center">
 
-![typescript](https://img.shields.io/badge/JavaScript-ES6+-yellow?style=for-the-badge\&logo=typescript)
-![express](https://img.shields.io/badge/Node.js-runtime-green?style=for-the-badge\&logo=express)
+![typescript](https://img.shields.io/badge/typescript-ES6+-yellow?style=for-the-badge\&logo=typescript)
+![express](https://img.shields.io/badge/typescript-runtime-green?style=for-the-badge\&logo=express)
 ![Node.js](https://img.shields.io/badge/Node.js-runtime-green?style=for-the-badge\&logo=node.js)
 ![API](https://img.shields.io/badge/API-REST-blue?style=for-the-badge)
 
