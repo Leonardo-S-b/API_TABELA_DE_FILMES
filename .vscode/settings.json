@@ -1,0 +1,4 @@
+{
+  "prisma.prismaPath": "${workspaceFolder}/apis/src/node_modules/.bin/prisma.cmd",
+  "prisma.schemaPath": "${workspaceFolder}/apis/src/src/prisma/schema.prisma"
+}

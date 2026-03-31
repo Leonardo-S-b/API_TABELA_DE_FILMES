@@ -1,195 +1,118 @@
-import {Router} from 'express';
+import { Router } from "express";
+import { Prisma } from "@prisma/client";
+import { prisma } from "../db/prisma";
 
 const router = Router();
 
-const filmes = [
-    {
-        id: 1,
-        title: 'the saw',
-        director: 'James Wan',
-        releaseYear: 2004,
-        genre: 'Horror',
-        rating: 7.6,
-        synopsis: 'A group of strangers wake up in a locked room, only to discover they are part of a sadistic game orchestrated by the Jigsaw Killer, who forces them to make life-or-death decisions to survive.'
+function parseId(value: string): number | null {
+    const id = Number(value);
+    return Number.isInteger(id) && id > 0 ? id : null;
+}
 
-    },
-    {
-        id: 2,
-        title: 'the conjuring',
-        director: 'James Wan',
-        releaseYear: 2013,
-        genre: 'Horror',
-        rating: 7.5,
-        synopsis: 'Paranormal investigators Ed and Lorraine Warren work to help a family terrorized by a dark presence in their farmhouse, uncovering a chilling history of supernatural occurrences.'
-    },
-    {
-        id: 3,
-        title: 'the exorcist',
-        director: 'William Friedkin',
-        releaseYear: 1973,
-        genre: 'Horror',
-        rating: 8.0,
-        synopsis: 'A mother seeks the help of two priests to save her daughter, who is possessed by a demonic entity, leading to a terrifying battle between good and evil.'
-    },
-    {
-        id: 4,
-        title: 'the ring',
-        director: 'Gore Verbinski',
-        releaseYear: 2002,
-        genre: 'Horror',
-        rating: 7.1,
-        synopsis: 'A journalist investigates a mysterious videotape that is said to cause the death of anyone who watches it within seven days, uncovering a dark and haunting secret.'
-    },
-    {
-        id: 5,
-        title: 'dumb and dumber',
-        director: 'Peter Howitt',
-        releaseYear: 1994,
-        genre: 'Comedy',
-        rating: 6.9,
-        synopsis: 'Two dim-witted friends set out on a cross-country road trip to find a lost inheritance, encountering various mishaps and comedic situations along the way.'
-    },
-    {
-        id: 6, 
-        title: 'the hangover',
-        director: 'Todd Phillips',
-        releaseYear: 2009,
-        genre: 'Comedy',
-        rating: 7.7,
-        synopsis: 'After a wild bachelor party in Las Vegas, three friends wake up with no memory of the previous night and must retrace their steps to find their missing friend before his wedding.'
-    },
-    {
-        id: 7,
-        title: 'superbad',
-        director: 'Greg Mottola',
-        releaseYear: 2007,
-        genre: 'Comedy',
-        rating: 7.6,
-        synopsis: 'Two high school friends navigate the challenges of adolescence and try to make the most of their last days before graduation, leading to a series of hilarious and awkward situations.'
-    },
-    {
-        id: 8,
-        title: 'the 40-year-old virgin',
-        director: 'Judd Apatow',
-        releaseYear: 2005,
-        genre: 'Comedy',
-        rating: 7.1,
-        synopsis: 'A middle-aged man who has never had sex tries to find love and lose his virginity, with the help of his friends, leading to a mix of awkward and heartwarming moments.'
-    },
-    {
-        id: 9,
-        title: 'broke back mountain',
-        director: 'Ang Lee',
-        releaseYear: 2005,
-        genre: 'Romance',
-        rating: 7.7,
-        synopsis: 'Two cowboys form a deep emotional and romantic bond while working together on a remote mountain, facing societal challenges and personal struggles over the years.'
-    },
-    {
-        id: 10,
-        title: 'her',
-        director: 'Spike Jonze',
-        releaseYear: 2013,
-        genre: 'Romance',
-        rating: 8.0,
-        synopsis: 'In a near future, a lonely writer develops an unlikely relationship with an operating system designed to meet his every need, exploring themes of love, technology, and human connection.'
+router.get("/", async (req, res) => {
+    try {
+        const filmes = await prisma.filme.findMany({ orderBy: { id: "asc" } });
+        return res.status(200).json(filmes);
+    } catch (error) {
+        return res.status(500).json({ message: "internal error", error });
     }
-];
-
-router.get('/', (req, res) =>{
-res.status(200).json(filmes);
 });
 
-router.post('/', (req, res) => {
-  if (!req.body || typeof req.body !== 'object') {
-    return res.status(400).json({
-      message: 'invalid request body',
-      hint: 'Use JSON body with Content-Type: application/json'
-    });
-  }
+router.get("/:id", async (req, res) => {
+    const id = parseId(req.params.id);
+    if (!id) return res.status(400).json({ message: "invalid id" });
 
-  const { title, director, releaseYear, genre, rating, synopsis } = req.body;
-
-  if (!title || !director || !releaseYear || !genre || rating === undefined || !synopsis) {
-    return res.status(400).json({ message: 'missing required fields' });
-  }
-
-  const novoFilme = {
-    id: filmes.length + 1,
-    title,
-    director,
-    releaseYear,
-    genre,
-    rating,
-    synopsis
-  };
-
-  filmes.push(novoFilme);
-  return res.status(201).json(novoFilme);
-});
-router.get("/:id", (req, res) => {
-    const id = req.params.id;
-    const filme  = filmes.find(filme => filme.id === parseInt(id));
-
-if(!filme){
-    return res.status(404).json({message: "filme not found"});
-};
-
-return res.status(200).json(filme);
+    try {
+        const filme = await prisma.filme.findUnique({ where: { id } });
+        if (!filme) return res.status(404).json({ message: "filme not found" });
+        return res.status(200).json(filme);
+    } catch (error) {
+        return res.status(500).json({ message: "internal error", error });
+    }
 });
 
-router.delete("/:id", (req, res) => {
-  const id = Number(req.params.id);
-
-  if (Number.isNaN(id)) {
-    return res.status(400).json({ message: "invalid id" });
-  }
-
-  const filmeIndex = filmes.findIndex((filme) => filme.id === id);
-
-  if (filmeIndex === -1) {
-    return res.status(404).json({ message: "filme not found" });
-  }
-
-  const [filmeRemovido] = filmes.splice(filmeIndex, 1);
-  return res.status(200).json({ message: "filme deleted", filme: filmeRemovido });
-});
-
-router.put("/:id", (req, res) =>{
-    const id = Number(req.params.id);
-    if (Number.isNaN(id)) {
-        return res.status(400).json({message: "invalid id"});
-    };
-
-    const filmeIndex = filmes.findIndex(filme => filme.id === id);
-
-    if(filmeIndex === -1){
-        return res.status(404).json({message: "filme not found"});
-    };
-
+router.post("/", async (req, res) => {
     if (!req.body || typeof req.body !== "object") {
-      return res.status(400).json({
-        message: "invalid request body",
-        hint: "Use JSON body with Content-Type: application/json"
-      });
+        return res.status(400).json({
+            message: "invalid request body",
+            hint: "Use JSON body with Content-Type: application/json",
+        });
     }
 
     const { title, director, releaseYear, genre, rating, synopsis } = req.body;
 
-    const filmeAtualizado = filmes[filmeIndex]!;
+    if (!title || !director || !releaseYear || !genre || rating === undefined || !synopsis) {
+        return res.status(400).json({ message: "missing required fields" });
+    }
 
-    if (title !== undefined) filmeAtualizado.title = title;
-    if (director !== undefined) filmeAtualizado.director = director;
-    if (releaseYear !== undefined) filmeAtualizado.releaseYear = releaseYear;
-    if (genre !== undefined) filmeAtualizado.genre = genre;
-    if (rating !== undefined) filmeAtualizado.rating = rating;
-    if (synopsis !== undefined) filmeAtualizado.synopsis = synopsis;
+    try {
+        const novoFilme = await prisma.filme.create({
+            data: {
+                title,
+                director,
+                releaseYear: Number(releaseYear),
+                genre,
+                rating: Number(rating),
+                synopsis,
+            },
+        });
 
-    return res.status(200).json({
-      message: "filme updated",
-      filme: filmeAtualizado
-    });
-})
+        return res.status(201).json(novoFilme);
+    } catch (error) {
+        return res.status(500).json({ message: "internal error", error });
+    }
+});
+
+router.put("/:id", async (req, res) => {
+    const id = parseId(req.params.id);
+    if (!id) return res.status(400).json({ message: "invalid id" });
+
+    if (!req.body || typeof req.body !== "object") {
+        return res.status(400).json({
+            message: "invalid request body",
+            hint: "Use JSON body with Content-Type: application/json",
+        });
+    }
+
+    const { title, director, releaseYear, genre, rating, synopsis } = req.body;
+
+    const data: Record<string, unknown> = {};
+    if (title !== undefined) data.title = title;
+    if (director !== undefined) data.director = director;
+    if (releaseYear !== undefined) data.releaseYear = Number(releaseYear);
+    if (genre !== undefined) data.genre = genre;
+    if (rating !== undefined) data.rating = Number(rating);
+    if (synopsis !== undefined) data.synopsis = synopsis;
+
+    try {
+        const filmeAtualizado = await prisma.filme.update({
+            where: { id },
+            data,
+        });
+
+        return res.status(200).json({ message: "filme updated", filme: filmeAtualizado });
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+            return res.status(404).json({ message: "filme not found" });
+        }
+        return res.status(500).json({ message: "internal error", error });
+    }
+});
+
+router.delete("/:id", async (req, res) => {
+    const id = parseId(req.params.id);
+    if (!id) return res.status(400).json({ message: "invalid id" });
+
+    try {
+        const filmeRemovido = await prisma.filme.delete({ where: { id } });
+        return res.status(200).json({ message: "filme deleted", filme: filmeRemovido });
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+            return res.status(404).json({ message: "filme not found" });
+        }
+        return res.status(500).json({ message: "internal error", error });
+    }
+});
 
 export const filmesRouter = router;
 
