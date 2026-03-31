@@ -73,10 +73,14 @@ Testes realizados utilizando o Insomnia:
  ┣ 📂 apis
  ┃ ┗ 📂 src
  ┃   ┣ 📂 src
+ ┃   ┃ ┣ 📂 controllers
+ ┃   ┃ ┃ ┗ 📜 filmesController.ts
  ┃   ┃ ┣ 📂 db
  ┃   ┃ ┃ ┗ 📜 prisma.ts
  ┃   ┃ ┣ 📂 prisma
  ┃   ┃ ┃ ┗ 📜 schema.prisma
+ ┃   ┃ ┣ 📂 services
+ ┃   ┃ ┃ ┗ 📜 filmesService.ts
  ┃   ┃ ┣ 📂 Routes
  ┃   ┃ ┃ ┗ 📜 Filmes.ts
  ┃   ┃ ┗ 📜 server.ts
@@ -85,6 +89,12 @@ Testes realizados utilizando o Insomnia:
  ┃   ┗ 📜 package.json
  ┗ 📜 README.md
 ```
+
+### 🧱 Organização (Route → Controller → Service)
+
+- **Routes**: define as rotas e delega para o controller
+- **Controllers**: valida `req/res`, retorna status (`400/404/500`) e chama o service
+- **Services**: regra de negócio + acesso ao banco (Prisma)
 
 ---
 
@@ -178,6 +188,8 @@ Body (JSON):
 }
 ```
 
+> Observação: também aceita chaves PT-BR (`titulo`, `diretor`, `ano`, `genero`, `nota`, `sinopse`).
+
 ### ✏️ Atualizar filme
 
 ```http
@@ -192,6 +204,8 @@ Body (JSON) — pode enviar só o que quiser atualizar:
 	"rating": 9.1
 }
 ```
+
+> Observação: também aceita chaves PT-BR (`titulo`, `diretor`, `ano`, `genero`, `nota`, `sinopse`).
 
 ### ❌ Deletar filme
 
