@@ -20,6 +20,27 @@ Ela permite armazenar e organizar informações sobre filmes, funcionando como u
 
 ---
 
+## 📸 Preview da API
+
+Testes realizados utilizando o Insomnia:
+
+---
+
+### 📥 Listagem de filmes
+<img src="assets/Get.png" width="800"/>
+
+---
+
+### ➕ Criação de filme
+<img src="assets/Post.png" width="800"/>
+
+---
+
+### 🗑️ Remoção de filme
+<img src="assets/Delete.png" width="800"/>
+
+---
+
 ## ⚙️ Funcionalidades
 
 ✨ Cadastro de filmes
