@@ -2,7 +2,6 @@ import {Router} from 'express';
 
 const router = Router();
 
-router.get('/', (req, res) =>{
 const filmes = [
     {
         id: 1,
@@ -95,9 +94,102 @@ const filmes = [
         rating: 8.0,
         synopsis: 'In a near future, a lonely writer develops an unlikely relationship with an operating system designed to meet his every need, exploring themes of love, technology, and human connection.'
     }
-]
+];
+
+router.get('/', (req, res) =>{
 res.status(200).json(filmes);
 });
+
+router.post('/', (req, res) => {
+  if (!req.body || typeof req.body !== 'object') {
+    return res.status(400).json({
+      message: 'invalid request body',
+      hint: 'Use JSON body with Content-Type: application/json'
+    });
+  }
+
+  const { title, director, releaseYear, genre, rating, synopsis } = req.body;
+
+  if (!title || !director || !releaseYear || !genre || rating === undefined || !synopsis) {
+    return res.status(400).json({ message: 'missing required fields' });
+  }
+
+  const novoFilme = {
+    id: filmes.length + 1,
+    title,
+    director,
+    releaseYear,
+    genre,
+    rating,
+    synopsis
+  };
+
+  filmes.push(novoFilme);
+  return res.status(201).json(novoFilme);
+});
+router.get("/:id", (req, res) => {
+    const id = req.params.id;
+    const filme  = filmes.find(filme => filme.id === parseInt(id));
+
+if(!filme){
+    return res.status(404).json({message: "filme not found"});
+};
+
+return res.status(200).json(filme);
+});
+
+router.delete("/:id", (req, res) => {
+  const id = Number(req.params.id);
+
+  if (Number.isNaN(id)) {
+    return res.status(400).json({ message: "invalid id" });
+  }
+
+  const filmeIndex = filmes.findIndex((filme) => filme.id === id);
+
+  if (filmeIndex === -1) {
+    return res.status(404).json({ message: "filme not found" });
+  }
+
+  const [filmeRemovido] = filmes.splice(filmeIndex, 1);
+  return res.status(200).json({ message: "filme deleted", filme: filmeRemovido });
+});
+
+router.put("/:id", (req, res) =>{
+    const id = Number(req.params.id);
+    if (Number.isNaN(id)) {
+        return res.status(400).json({message: "invalid id"});
+    };
+
+    const filmeIndex = filmes.findIndex(filme => filme.id === id);
+
+    if(filmeIndex === -1){
+        return res.status(404).json({message: "filme not found"});
+    };
+
+    if (!req.body || typeof req.body !== "object") {
+      return res.status(400).json({
+        message: "invalid request body",
+        hint: "Use JSON body with Content-Type: application/json"
+      });
+    }
+
+    const { title, director, releaseYear, genre, rating, synopsis } = req.body;
+
+    const filmeAtualizado = filmes[filmeIndex]!;
+
+    if (title !== undefined) filmeAtualizado.title = title;
+    if (director !== undefined) filmeAtualizado.director = director;
+    if (releaseYear !== undefined) filmeAtualizado.releaseYear = releaseYear;
+    if (genre !== undefined) filmeAtualizado.genre = genre;
+    if (rating !== undefined) filmeAtualizado.rating = rating;
+    if (synopsis !== undefined) filmeAtualizado.synopsis = synopsis;
+
+    return res.status(200).json({
+      message: "filme updated",
+      filme: filmeAtualizado
+    });
+})
 
 export const filmesRouter = router;
 
