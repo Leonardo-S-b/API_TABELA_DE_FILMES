@@ -290,6 +290,11 @@ git push origin minha-feature
 💼 Em constante evolução como desenvolvedor
 🚀 Focado em backend e projetos reais
 
+
+## 👨‍💻 Contribuidores
+
+<a href="https://github.com/wagnerloch"><img src="https://github.com/wagnerloch.png" width="45" height="45"></a> &nbsp;
+
 ---
 
 <div align="center">
