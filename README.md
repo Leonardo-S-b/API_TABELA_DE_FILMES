@@ -285,6 +285,8 @@ git push origin minha-feature
 
 **Leonardo Souza Bezerra**
 
+<a href="https://github.com/Leonardo-S-b"><img src="https://github.com/Leonardo-S-b.png" width="45" height="45"></a> &nbsp;
+
 💼 Em constante evolução como desenvolvedor
 🚀 Focado em backend e projetos reais
 
