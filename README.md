@@ -101,7 +101,7 @@ DATABASE_URL="mysql://USUARIO:SENHA@localhost:3306/NOME_DO_BANCO"
 Exemplo:
 
 ```env
-DATABASE_URL="mysql://root:0607@localhost:3306/api_db"
+DATABASE_URL="mysql://root:1234@localhost:3306/api_db"
 ```
 
 ### 3) Rodar migrations do Prisma
